@@ -22,8 +22,8 @@ app.use("/tickets", tickets);
 
 const port = process.env.PORT || 5000;
 const mongodbURI =
-  process.env.MONGO_URI 
-//   "mongodb+srv://surajkales111:Suraj%40011@cluster0.attymsz.mongodb.net/redbus";
+  process.env.MONGO_URI ||
+  "mongodb+srv://surajkales111:Suraj%40011@cluster0.attymsz.mongodb.net/redbus";
   console.log(process.env.MONGO_URI);
 mongoose.connect(mongodbURI).then(() => {
   console.log("Database is Connected");

@@ -2,7 +2,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors');
-const env = require('dotenv').config();
+const env = require('dotenv')
 const trips = require("./Routes/tripsRoutes");
 const buses = require("./Routes/busRoutes")
 const dists = require("./Routes/stateRoutes")
@@ -22,6 +22,7 @@ app.use("/buses",buses)
 app.use("/dists",dists)
 app.use("/tickets",tickets)
 
+env.config()
 mongoose.connect(mongodbURI).then(()=>{
     console.log("Database is Connected")
 })

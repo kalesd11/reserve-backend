@@ -9,10 +9,7 @@ const dists = require("./Routes/stateRoutes")
 const  tickets= require("./Routes/ticketRoutes")
 
 // Declaring variables
-env.config()
-const port = process.env.PORT || 5000
 const app = express();
-const mongodbURI = process.env.MONGO_URI;
 
 // Apply middelware
 app.use(express.json());
@@ -23,6 +20,10 @@ app.use("/buses",buses)
 app.use("/dists",dists)
 app.use("/tickets",tickets)
 
+
+env.config()
+const port = process.env.PORT || 5000
+const mongodbURI = process.env.MONGO_URI;
 mongoose.connect(mongodbURI).then(()=>{
     console.log("Database is Connected")
 })

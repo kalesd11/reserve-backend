@@ -8,7 +8,7 @@ const dists = require("./Routes/stateRoutes");
 const tickets = require("./Routes/ticketRoutes");
 
 // Declaring variables
-require("dotenv").config();
+require("dotenv").config({});
 const app = express();
 
 // Apply middelware

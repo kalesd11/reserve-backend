@@ -8,10 +8,11 @@ const router = express.Router();
 
 // POST API to addTrip ///////////////////////////
 router.post("/addTrip", async (req, res) => {
-  let from = new mongoose.Types.ObjectId(req.query.from);
-  let to = new mongoose.Types.ObjectId(req.query.to);
-  try {
+  let from = new mongoose.Types.ObjectId(req.body.from);
+  let to = new mongoose.Types.ObjectId(req.body.to);
+  // try {
     const busData = await Bus.findOne({ bus_no: req.body.bus_no });
+    console.log(req.body);
     const data = new Trip({
       date: req.body.date,
       from: from,
@@ -28,9 +29,9 @@ router.post("/addTrip", async (req, res) => {
     });
     const result = await data.save();
     res.json(result);
-  } catch (err) {
-    res.json("An Error Occured");
-  }
+  // } catch (err) {
+  //   res.json("An Error Occured");
+  // }
 });
 
 // GET API for trips/////////////////////////////
@@ -115,7 +116,7 @@ router.get("/get_trips", async (req, res) => {
 // GET API for trips by date
 router.get("/getTripsByDate", async (req, res) => {
   try {
-    const date = new Date(req.query.date);
+    const date = req.query.date;
     console.log(date);
     let from = new mongoose.Types.ObjectId(req.query.from);
     let to = new mongoose.Types.ObjectId(req.query.to);
@@ -192,7 +193,7 @@ router.get("/getTripsByFilter", async (req, res) => {
   let userQuery = {};
   let query = req.query;
   if (query.date) {
-    userQuery.date = new Date(query.date);
+    userQuery.date = query.date;
   }
   if (query.from) {
     userQuery.from = new mongoose.Types.ObjectId(query.from);

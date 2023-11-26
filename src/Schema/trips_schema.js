@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const TripsSchema = new mongoose.Schema({
   date: {
-    type: Date,
+    type: String,
     required: true,
   },
   from: {
@@ -18,11 +18,11 @@ const TripsSchema = new mongoose.Schema({
     required: true,
   },
   startTime: {
-    type: Date,
+    type: String,
     required: true,
   },
   endTime: {
-    type: Date,
+    type: String,
     required: true,
   },
   category: {

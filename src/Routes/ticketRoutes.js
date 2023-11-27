@@ -51,8 +51,6 @@ router.post("/payment", async (req, res) => {
         // images:[product.imgdata]
       },
       unit_amount: trip.busFare * 100,
-      amount_shipping: 0,
-      amount_tax: 0,
     },
     quantity: 1,
   }));
@@ -64,7 +62,7 @@ router.post("/payment", async (req, res) => {
     success_url: "http://localhost:3000/success",
     cancel_url: "http://localhost:3000/cancel",
   });
-  console.log(session);
+  // console.log(session);
   res.json({ id: session.id });
 });
 

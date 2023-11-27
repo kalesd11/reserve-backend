@@ -12,7 +12,7 @@ router.post("/addTrip", async (req, res) => {
   let to = new mongoose.Types.ObjectId(req.body.to);
   // try {
     const busData = await Bus.findOne({ bus_no: req.body.bus_no });
-    console.log(req.body);
+    // console.log(req.body);
     const data = new Trip({
       date: req.body.date,
       from: from,

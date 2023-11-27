@@ -22,7 +22,7 @@ const Ticket_schema = new Schema({
     required: true,
   },
   seat_no: {
-    type: String,
+    type: [],
     required: true,
   },
 });

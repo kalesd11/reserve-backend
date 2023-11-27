@@ -30,8 +30,9 @@ router.post("/book_ticket", async (req, res) => {
       if (seat.seatBooked.includes(req.body.seat_no)) {
         res.json("Sorry! Seat is already booked!");
       } else {
+        const seatNos = req.body.seat_no; // Assuming seat_no is an array
         const tripData = await Trip.findByIdAndUpdate(req.body.trip, {
-          $push: { seatBooked: req.body.seat_no },
+          $push: { seatBooked: { $each: seatNos } },
         });
         res.json(tripData);
       }

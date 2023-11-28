@@ -66,7 +66,7 @@ router.post("/payment", async (req, res) => {
 });
 
 router.post("/webhook", async (req, res) => {
-  const payload = req.body;
+  const payload = req.rawBody;
   const sig = req.headers["stripe-signature"];
 
   let event;
@@ -94,7 +94,6 @@ router.post("/webhook", async (req, res) => {
     const seatsMetadata = session.metadata.seats;
     const tripMetadata = session.metadata.trip;
     const personalMetadata = session.metadata.personalInfo;
-    console.log("Seats Metadata:", seatsMetadata);
 
     // Make another API call here, e.g., to update a database or notify another service
     try {
@@ -130,20 +129,5 @@ router.post("/webhook", async (req, res) => {
     }
   }
 });
-
-// Function to make another API call (replace with your actual API call logic)
-// async function makeAnotherApiCall(transactionId) {
-//   // Replace the following line with your actual API call logic
-//   const response = await fetch("https://your-api-endpoint.com", {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//       // Add any other headers as needed
-//     },
-//     body: JSON.stringify({ transactionId }),
-//   });
-
-//   return response.json();
-// }
 
 module.exports = router;

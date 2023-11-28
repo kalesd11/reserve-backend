@@ -11,14 +11,7 @@ const stripe = require("stripe")(
 //POST API for Ticket Booking
 router.post("/book_ticket", async (req, res) => {
   try {
-    const data = new Collection({
-      fullname: req.body.fullname,
-      trip: req.body.trip,
-      bus: req.body.bus,
-      busFare: req.body.busFare,
-      paymentStatus: req.body.paymentStatus,
-      seat_no: req.body.seat_no,
-    });
+    const data = new Collection(req.body);
 
     const result = await data.save();
     // check if payment status is successfull
@@ -65,7 +58,7 @@ router.post("/payment", async (req, res) => {
       cancel_url: "http://localhost:3000/cancel",
     });
     // console.log(session);
-    res.json({ id: session.id});
+    res.json({ id: session.id });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -97,20 +90,44 @@ router.post("/webhook", async (req, res) => {
     const transactionId = session.payment_intent;
     console.log("Transaction ID:", transactionId);
 
-    res.json(session)
+    // Access metadata from the session object
+    const seatsMetadata = session.metadata.seats;
+    const tripMetadata = session.metadata.trip;
+    const personalMetadata = session.metadata.personalInfo;
+    console.log("Seats Metadata:", seatsMetadata);
+
     // Make another API call here, e.g., to update a database or notify another service
-  //   try {
-  //     const response = await makeAnotherApiCall(transactionId);
-  //     console.log("API Call Response:", response);
+    try {
+      const response = await fetch(
+        "https://reserve-be.onrender.com/tickets/book_ticket",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            transactionId: transactionId,
+            fullname: personalMetadata.fullname,
+            trip : tripMetadata._id,
+            bus : tripMetadata.busInfo[0]._id ,
+            mobile_no:personalMetadata.mobile,
+            busFare : tripMetadata.busFare,
+            payment_status : true,
+            seat_no : seatsMetadata
+          }),
+        }
+      );
 
-  //     res.status(200).json(response);
-  //     // Handle the response as needed
-  //   } catch (apiError) {
-  //     console.error("API Call Error:", apiError);
-  //     // Handle API call error
-  //     res.status(400).json("An error occured")
-  //   }
+      const responseData = await response.json();
+      console.log("API Call Response:", responseData);
 
+      res.status(200).json(responseData);
+      // Handle the response as needed
+    } catch (apiError) {
+      console.error("API Call Error:", apiError);
+      // Handle API call error
+      res.status(400).json("An error occurred");
+    }
   }
 });
 

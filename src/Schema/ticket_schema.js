@@ -1,6 +1,8 @@
 const { Schema, model } = require("mongoose");
 
 const Ticket_schema = new Schema({
+  transactionId : String,
+  session_id : String,
   fullname: {
     type: String,
     required: true,
@@ -21,8 +23,9 @@ const Ticket_schema = new Schema({
     type: Boolean,
     required: true,
   },
+  mobile_no :"String",
   seat_no: {
-    type: [],
+    type: [Number],
     required: true,
   },
 });

@@ -65,7 +65,7 @@ router.post("/payment", async (req, res) => {
       cancel_url: "http://localhost:3000/cancel",
     });
     // console.log(session);
-    const transactionId = session.payment_intent;
+    const transactionId = session.payment_intent.id;
     res.json({ id: session.id, transactionId});
   } catch (error) {
     console.error(error);

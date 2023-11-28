@@ -43,28 +43,90 @@ router.post("/book_ticket", async (req, res) => {
 });
 
 router.post("/payment", async (req, res) => {
-  const { seats, trip } = req.body;
-  const lineItems = seats.map((seat) => ({
-    price_data: {
-      currency: "inr",
-      product_data: {
-        name: "Seat No " + seat,
-        // images:[product.imgdata]
+  try {
+    const { seats, trip } = req.body;
+    const lineItems = seats.map((seat) => ({
+      price_data: {
+        currency: "inr",
+        product_data: {
+          name: "Seat No " + seat,
+          // images:[product.imgdata]
+        },
+        unit_amount: trip.busFare * 100,
       },
-      unit_amount: trip.busFare * 100,
-    },
-    quantity: 1,
-  }));
+      quantity: 1,
+    }));
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: lineItems,
-    mode: "payment",
-    success_url: "http://localhost:3000/success",
-    cancel_url: "http://localhost:3000/cancel",
-  });
-  // console.log(session);
-  res.json({ id: session.id });
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: lineItems,
+      mode: "payment",
+      success_url: "http://localhost:3000/success",
+      cancel_url: "http://localhost:3000/cancel",
+    });
+    // console.log(session);
+    const transactionId = session.payment_intent;
+    res.json({ id: session.id, transactionId});
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 });
+
+// router.post("/webhook", async (req, res) => {
+//   const payload = req.body;
+//   const sig = req.headers["stripe-signature"];
+
+//   let event;
+
+//   try {
+//     event = stripe.webhooks.constructEvent(
+//       payload,
+//       sig,
+//       "whsec_R3XvcwGNgtUhBnLPR0jWGfcTSVoonkY5"
+//     );
+//   } catch (err) {
+//     console.error("Webhook Error:", err.message);
+//     return res.status(400).send(`Webhook Error: ${err.message}`);
+//   }
+
+//   // Handle the event
+//   if (event.type === "checkout.session.completed") {
+//     const session = event.data.object;
+
+//     // Access transaction ID from the session object
+//     const transactionId = session.payment_intent;
+//     console.log("Transaction ID:", transactionId);
+
+//     // Make another API call here, e.g., to update a database or notify another service
+//     try {
+//       const response = await makeAnotherApiCall(transactionId);
+//       console.log("API Call Response:", response);
+
+//       res.status(200).json(response);
+//       // Handle the response as needed
+//     } catch (apiError) {
+//       console.error("API Call Error:", apiError);
+//       // Handle API call error
+//       res.status(400).json("An error occured")
+//     }
+
+//   }
+// });
+
+// Function to make another API call (replace with your actual API call logic)
+// async function makeAnotherApiCall(transactionId) {
+//   // Replace the following line with your actual API call logic
+//   const response = await fetch("https://your-api-endpoint.com", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       // Add any other headers as needed
+//     },
+//     body: JSON.stringify({ transactionId }),
+//   });
+
+//   return response.json();
+// }
 
 module.exports = router;

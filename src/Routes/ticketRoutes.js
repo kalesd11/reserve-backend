@@ -67,7 +67,7 @@ router.post("/payment", async (req, res) => {
 });
 
 router.post("/webhook", express.raw({ type: 'application/json' }), async (req, res) => {
-  const payload = req.body.toString();
+  const payload = JSON.stringify(req.body);
   const sig = req.headers["stripe-signature"];
 
   let event;

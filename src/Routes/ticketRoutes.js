@@ -65,54 +65,54 @@ router.post("/payment", async (req, res) => {
       cancel_url: "http://localhost:3000/cancel",
     });
     // console.log(session);
-    const transactionId = session.payment_intent.id;
-    res.json({ id: session.id, transactionId});
+    res.json({ id: session.id});
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
 });
 
-// router.post("/webhook", async (req, res) => {
-//   const payload = req.body;
-//   const sig = req.headers["stripe-signature"];
+router.post("/webhook", async (req, res) => {
+  const payload = req.body;
+  const sig = req.headers["stripe-signature"];
 
-//   let event;
+  let event;
 
-//   try {
-//     event = stripe.webhooks.constructEvent(
-//       payload,
-//       sig,
-//       "whsec_R3XvcwGNgtUhBnLPR0jWGfcTSVoonkY5"
-//     );
-//   } catch (err) {
-//     console.error("Webhook Error:", err.message);
-//     return res.status(400).send(`Webhook Error: ${err.message}`);
-//   }
+  try {
+    event = stripe.webhooks.constructEvent(
+      payload,
+      sig,
+      "whsec_R3XvcwGNgtUhBnLPR0jWGfcTSVoonkY5"
+    );
+  } catch (err) {
+    console.error("Webhook Error:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
 
-//   // Handle the event
-//   if (event.type === "checkout.session.completed") {
-//     const session = event.data.object;
+  // Handle the event
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
 
-//     // Access transaction ID from the session object
-//     const transactionId = session.payment_intent;
-//     console.log("Transaction ID:", transactionId);
+    // Access transaction ID from the session object
+    const transactionId = session.payment_intent;
+    console.log("Transaction ID:", transactionId);
 
-//     // Make another API call here, e.g., to update a database or notify another service
-//     try {
-//       const response = await makeAnotherApiCall(transactionId);
-//       console.log("API Call Response:", response);
+    res.json(session)
+    // Make another API call here, e.g., to update a database or notify another service
+  //   try {
+  //     const response = await makeAnotherApiCall(transactionId);
+  //     console.log("API Call Response:", response);
 
-//       res.status(200).json(response);
-//       // Handle the response as needed
-//     } catch (apiError) {
-//       console.error("API Call Error:", apiError);
-//       // Handle API call error
-//       res.status(400).json("An error occured")
-//     }
+  //     res.status(200).json(response);
+  //     // Handle the response as needed
+  //   } catch (apiError) {
+  //     console.error("API Call Error:", apiError);
+  //     // Handle API call error
+  //     res.status(400).json("An error occured")
+  //   }
 
-//   }
-// });
+  }
+});
 
 // Function to make another API call (replace with your actual API call logic)
 // async function makeAnotherApiCall(transactionId) {

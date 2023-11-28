@@ -14,14 +14,14 @@ const app = express();
 // Apply middelware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  express.raw({
-    type: "application/json",
-    verify: (req, res, buf) => {
-      req.rawBody = buf;
-    },
-  })
-);
+// app.use(
+//   express.raw({
+//     type: "application/json",
+//     verify: (req, res, buf) => {
+//       req.rawBody = buf;
+//     },
+//   })
+// );
 app.use(cors());
 app.use("/trips", trips);
 app.use("/buses", buses);

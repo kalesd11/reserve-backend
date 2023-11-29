@@ -70,7 +70,7 @@ router.post(
   async (req, res) => {
     const payload = req.body;
     const sig = req.headers["stripe-signature"];
-
+    console.log(payload);
     let event;
 
     try {
@@ -96,9 +96,9 @@ router.post(
       const tripMetadata = session.metadata.trip;
       const personalMetadata = session.metadata.personalInfo;
       console.log(session)
-      console.log(session.metadata);
-      console.log(personalMetadata);
-      console.log(seatsMetadata);
+      // console.log(session.metadata);
+      // console.log(personalMetadata);
+      // console.log(seatsMetadata);
 
       // Make another API call here, e.g., to update a database or notify another service
       try {

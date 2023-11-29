@@ -12,7 +12,13 @@ require("dotenv").config({});
 const app = express();
 
 // Apply middelware
-app.use(express.json())
+app.use((req, res, next) => {
+  if (req.originalUrl === '/tickets/webhook') {
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
 app.use(express.urlencoded({ extended: true }));
 // app.use(
 //   express.raw({

@@ -95,6 +95,7 @@ router.post(
       const seatsMetadata = session.metadata.seats;
       const tripMetadata = session.metadata.trip;
       const personalMetadata = session.metadata.personalInfo;
+      console.log(session)
       console.log(session.metadata);
       console.log(personalMetadata);
       console.log(seatsMetadata);

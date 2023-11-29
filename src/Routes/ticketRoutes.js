@@ -1,5 +1,4 @@
 const express = require("express");
-const crypto = require("crypto");
 const State = require("../Schema/state_schema");
 const Trip = require("../Schema/trips_schema");
 const Bus = require("../Schema/bus_schema");
@@ -55,7 +54,6 @@ router.post("/payment", async (req, res) => {
       success_url: "http://localhost:3000/success",
       cancel_url: "http://localhost:3000/cancel",
     });
-    console.log(req.body.metadata);
     res.status(200).json({ id: session.id });
   } catch (error) {
     // console.error(error);
@@ -70,7 +68,6 @@ router.post(
   async (req, res) => {
     const payload = req.body;
     const sig = req.headers["stripe-signature"];
-    console.log(payload);
     let event;
 
     try {
@@ -85,6 +82,7 @@ router.post(
     }
 
     // Handle the event
+    console.log(JSON.parse(payload.toString()));
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
 

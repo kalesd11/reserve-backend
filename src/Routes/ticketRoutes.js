@@ -96,9 +96,9 @@ router.post(
       const transactionId = session.payment_intent;
       console.log("Transaction ID:", transactionId);
 
-      const seatsMetadata = session.line_items[0].metadata.seat;
-      const tripMetadata = session.line_items[0].metadata.trip;
-      const personalMetadata = session.line_items[0].metadata.personalInfo;
+      const seatsMetadata = session.line_items.metadata.seat;
+      const tripMetadata = session.line_items.metadata.trip;
+      const personalMetadata = session.line_items.metadata.personalInfo;
 
       console.log(session);
       console.log(session.metadata);

@@ -54,7 +54,8 @@ router.post("/payment", async (req, res) => {
       success_url: "http://localhost:3000/success",
       cancel_url: "http://localhost:3000/cancel",
     });
-    // console.log(session);
+    console.log(session.metadata);
+    console.log(req.body.metadata);
     res.status(200).json({ id: session.id });
   } catch (error) {
     // console.error(error);
@@ -121,7 +122,7 @@ router.post(
             }),
           }
         );
-
+        
         const responseData = await response.json();
         // console.log("API Call Response:", responseData);
 

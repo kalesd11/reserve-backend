@@ -117,7 +117,7 @@ router.get("/get_trips", async (req, res) => {
 router.get("/getTripsByDate", async (req, res) => {
   try {
     const date = req.query.date;
-    console.log(date);
+    // console.log(date);
     let from = new mongoose.Types.ObjectId(req.query.from);
     let to = new mongoose.Types.ObjectId(req.query.to);
     if (!from || !to) {

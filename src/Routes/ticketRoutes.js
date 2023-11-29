@@ -1,5 +1,5 @@
 const express = require("express");
-const crypto = require("crypto")
+const crypto = require("crypto");
 const State = require("../Schema/state_schema");
 const Trip = require("../Schema/trips_schema");
 const Bus = require("../Schema/bus_schema");
@@ -20,22 +20,16 @@ router.post("/book_ticket", async (req, res) => {
       res.status(400).json("Sorry Could not complete the payment");
     } else {
       //check if seat is available
-      const seat = await Trip.findById(req.body.trip);
-      if (seat.seatBooked.includes(req.body.seat_no)) {
-        res.status(400).json("Sorry! Seat is already booked!");
-      } else {
-        const seatNos = req.body.seat_no; // Assuming seat_no is an array
-        const tripData = await Trip.findByIdAndUpdate(req.body.trip, {
-          $push: { seatBooked: { $each: seatNos } },
-        });
-        res.status(200).json(tripData);
-      }
+      const seatNos = req.body.seat_no; // Assuming seat_no is an array
+      const tripData = await Trip.findByIdAndUpdate(req.body.trip, {
+        $push: { seatBooked: { $each: seatNos } },
+      });
+      res.status(200).json(tripData);
     }
   } catch {
     res.status(400).json("Something Went Wrong");
   }
 });
-
 
 // Initializing payment api
 router.post("/payment", async (req, res) => {
@@ -63,76 +57,79 @@ router.post("/payment", async (req, res) => {
     // console.log(session);
     res.status(200).json({ id: session.id });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     res.status(500).send("Internal Server Error");
   }
 });
 
-
 // Webhook API
-router.post("/webhook", express.raw({ type: 'application/json' }), async (req, res) => {
-  const payload = req.body;
-  const sig = req.headers["stripe-signature"];
+router.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    const payload = req.body;
+    const sig = req.headers["stripe-signature"];
 
-  let event;
+    let event;
 
-  try {
-    event = stripe.webhooks.constructEvent(
-      payload,
-      sig,
-      "whsec_R3XvcwGNgtUhBnLPR0jWGfcTSVoonkY5"
-    );
-  } catch (err) {
-    console.error("Webhook Error:", err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  // Handle the event
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-
-    // Access transaction ID from the session object
-    const transactionId = session.payment_intent;
-    console.log("Transaction ID:", transactionId);
-
-    // Access metadata from the session object
-    const seatsMetadata = session.metadata.seats;
-    const tripMetadata = session.metadata.trip;
-    const personalMetadata = session.metadata.personalInfo;
-
-    // Make another API call here, e.g., to update a database or notify another service
     try {
-      const response = await fetch(
-        "https://reserve-be.onrender.com/tickets/book_ticket",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            transactionId: transactionId,
-            fullname: personalMetadata.fullname,
-            trip : tripMetadata._id,
-            bus : tripMetadata.busInfo[0]._id ,
-            mobile_no:personalMetadata.mobile,
-            busFare : tripMetadata.busFare,
-            payment_status : true,
-            seat_no : seatsMetadata
-          }),
-        }
+      event = stripe.webhooks.constructEvent(
+        payload,
+        sig,
+        "whsec_R3XvcwGNgtUhBnLPR0jWGfcTSVoonkY5"
       );
+    } catch (err) {
+      // console.error("Webhook Error:", err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
 
-      const responseData = await response.json();
-      console.log("API Call Response:", responseData);
+    // Handle the event
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
 
-      res.status(200).json(responseData);
-      // Handle the response as needed
-    } catch (apiError) {
-      console.error("API Call Error:", apiError);
-      // Handle API call error
-      res.status(400).json("An error occurred");
+      // Access transaction ID from the session object
+      const transactionId = session.payment_intent;
+      // console.log("Transaction ID:", transactionId);
+
+      // Access metadata from the session object
+      const seatsMetadata = session.metadata.seats;
+      const tripMetadata = session.metadata.trip;
+      const personalMetadata = session.metadata.personalInfo;
+
+      // Make another API call here, e.g., to update a database or notify another service
+      try {
+        const response = await fetch(
+          "https://reserve-be.onrender.com/tickets/book_ticket",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              transactionId: transactionId,
+              fullname: personalMetadata.fullname,
+              trip: tripMetadata._id,
+              bus: tripMetadata.busInfo[0]._id,
+              mobile_no: personalMetadata.mobile,
+              busFare: tripMetadata.busFare,
+              payment_status: true,
+              seat_no: seatsMetadata,
+            }),
+          }
+        );
+
+        const responseData = await response.json();
+        // console.log("API Call Response:", responseData);
+
+        res.status(200).json(responseData);
+        // Handle the response as needed
+      } catch (apiError) {
+        // console.error("API Call Error:", apiError);
+        // Handle API call error
+        res.status(400).json("An error occurred");
+      }
     }
   }
-});
+);
 
 module.exports = router;

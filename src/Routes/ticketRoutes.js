@@ -45,6 +45,11 @@ router.post("/payment", async (req, res) => {
         unit_amount: trip.busFare * 100,
       },
       quantity: 1,
+      metadata: {
+        seat: seats,
+        trip: trip,
+        personalInfo: personalInfo,
+      },
     }));
 
     const session = await stripe.checkout.sessions.create({
@@ -54,8 +59,6 @@ router.post("/payment", async (req, res) => {
       success_url: "http://localhost:3000/success",
       cancel_url: "http://localhost:3000/cancel",
     });
-    console.log(session.metadata);
-    console.log(req.body.metadata);
     res.status(200).json({ id: session.id });
   } catch (error) {
     // console.error(error);
@@ -92,11 +95,11 @@ router.post(
       const transactionId = session.payment_intent;
       console.log("Transaction ID:", transactionId);
 
-      // Access metadata from the session object
-      const seatsMetadata = session.metadata.seats;
-      const tripMetadata = session.metadata.trip;
-      const personalMetadata = session.metadata.personalInfo;
-      console.log(session)
+      const seatsMetadata = session.line_items[0].metadata.seat;
+      const tripMetadata = session.line_items[0].metadata.trip;
+      const personalMetadata = session.line_items[0].metadata.personalInfo;
+
+      console.log(session);
       console.log(session.metadata);
       console.log(personalMetadata);
       console.log(seatsMetadata);
@@ -122,7 +125,7 @@ router.post(
             }),
           }
         );
-        
+
         const responseData = await response.json();
         // console.log("API Call Response:", responseData);
 

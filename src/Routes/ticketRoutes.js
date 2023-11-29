@@ -40,7 +40,7 @@ router.post("/payment", async (req, res) => {
         currency: "inr",
         product_data: {
           name: "Seat No " + seat,
-          metadata: { ...req.body.metadata },
+          // metadata: {...req.body.metadata},
           // images:[product.imgdata]
         },
         unit_amount: trip.busFare * 100,
@@ -91,9 +91,6 @@ router.post(
       // Access transaction ID from the session object
       const transactionId = session.payment_intent;
       console.log("Transaction ID:", transactionId);
-
-      const firstLineItemMetadata = session.line_items[0].metadata;
-      console.log(firstLineItemMetadata);
       // Access metadata from the session object
       const seatsMetadata = session.metadata.seats;
       const tripMetadata = session.metadata.trip;

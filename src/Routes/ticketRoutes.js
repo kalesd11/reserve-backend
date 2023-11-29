@@ -45,11 +45,11 @@ router.post("/payment", async (req, res) => {
         unit_amount: trip.busFare * 100,
       },
       quantity: 1,
-      metadata: {
-        seat: seats,
-        trip: trip,
-        personalInfo: personalInfo,
-      },
+      // metadata: {
+      //   seat: seats,
+      //   trip: trip,
+      //   personalInfo: personalInfo,
+      // },
     }));
 
     const session = await stripe.checkout.sessions.create({
@@ -62,7 +62,7 @@ router.post("/payment", async (req, res) => {
     res.status(200).json({ id: session.id });
   } catch (error) {
     // console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send(error.message);
   }
 });
 

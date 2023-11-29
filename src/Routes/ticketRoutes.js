@@ -17,25 +17,27 @@ router.post("/book_ticket", async (req, res) => {
     const result = await data.save();
     // check if payment status is successfull
     if (!result.paymentStatus) {
-      res.json("Sorry Could not complete the payment");
+      res.status(400).json("Sorry Could not complete the payment");
     } else {
       //check if seat is available
       const seat = await Trip.findById(req.body.trip);
       if (seat.seatBooked.includes(req.body.seat_no)) {
-        res.json("Sorry! Seat is already booked!");
+        res.status(400).json("Sorry! Seat is already booked!");
       } else {
         const seatNos = req.body.seat_no; // Assuming seat_no is an array
         const tripData = await Trip.findByIdAndUpdate(req.body.trip, {
           $push: { seatBooked: { $each: seatNos } },
         });
-        res.json(tripData);
+        res.status(200).json(tripData);
       }
     }
   } catch {
-    res.json("Something Went Wrong");
+    res.status(400).json("Something Went Wrong");
   }
 });
 
+
+// Initializing payment api
 router.post("/payment", async (req, res) => {
   try {
     const { seats, trip } = req.body;
@@ -59,13 +61,15 @@ router.post("/payment", async (req, res) => {
       cancel_url: "http://localhost:3000/cancel",
     });
     // console.log(session);
-    res.json({ id: session.id });
+    res.status(200).json({ id: session.id });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
 });
 
+
+// Webhook API
 router.post("/webhook", express.raw({ type: 'application/json' }), async (req, res) => {
   const payload = req.body;
   const sig = req.headers["stripe-signature"];

@@ -43,13 +43,14 @@ router.post("/payment", async (req, res) => {
           // images:[product.imgdata]
         },
         unit_amount: trip.busFare * 100,
+        metadata: {
+          seat: seats,
+          trip: trip,
+          personalInfo: personalInfo,
+        },
       },
       quantity: 1,
-      metadata: {
-        seat: seats,
-        trip: trip,
-        personalInfo: personalInfo,
-      },
+      
     }));
 
     const session = await stripe.checkout.sessions.create({

@@ -34,7 +34,7 @@ router.post("/book_ticket", async (req, res) => {
 // Initializing payment api
 router.post("/payment", async (req, res) => {
   try {
-    const { seats, trip } = req.body;
+    const { seats, trip, personalInfo } = req.body;
     const lineItems = seats.map((seat) => ({
       price_data: {
         currency: "inr",
@@ -89,12 +89,14 @@ router.post(
 
       // Access transaction ID from the session object
       const transactionId = session.payment_intent;
-      // console.log("Transaction ID:", transactionId);
+      console.log("Transaction ID:", transactionId);
 
       // Access metadata from the session object
       const seatsMetadata = session.metadata.seats;
       const tripMetadata = session.metadata.trip;
       const personalMetadata = session.metadata.personalInfo;
+      console.log(personalMetadata);
+      console.log(seatsMetadata);
 
       // Make another API call here, e.g., to update a database or notify another service
       try {

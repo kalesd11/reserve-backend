@@ -25,7 +25,7 @@ const Ticket_schema = new Schema({
   },
   mobile_no :"String",
   seat_no: {
-    type: [Number],
+    type: [String],
     required: true,
   },
 });
